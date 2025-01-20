@@ -226,4 +226,45 @@ double range(vector<double> &vec){
 
     return range;
 }
+vector<double> detectOutliersUsingIQR(vector<double>& vec){  // inter quartile range
+    vector<double> outliersUsingIQR;
+    vector<double> quartiles = calculateQuartiles(vec);
+    
+    double q1 = *(quartiles.begin());
+    double q3 = *(quartiles.end() - 1);
+
+    double IQR = q3 - q1;
+    double lowerBound = q1 - 1.5 * IQR;
+    double upperBound = q3 + 1.5 * IQR;
+    
+    for (double value : vec) {
+        if (value < lowerBound || value > upperBound) {
+            outliersUsingIQR.push_back(value);
+        }
+    }
+    
+    return outliersUsingIQR;
+}
+double calculateZScore(double point, double mean, double standardDeviation){
+    double zScore = (point - mean) / standardDeviation;
+    return zScore;
+}
+vector<double> calculateOutliersUsingZScore(vector<double> &vec){
+    double mean;
+    double standardDeviation;
+    double zScore;
+    vector<double> outliersUsingZScore;
+
+    mean = calculateMean(vec);
+    standardDeviation = calculateStandardDeviation(vec);
+    for(double point: vec)
+    {
+        zScore = calculateZScore(point, mean, standardDeviation);
+        if(zScore > 3 || zScore < -3){
+            outliersUsingZScore.push_back(point);
+        }
+    }
+
+    return outliersUsingZScore;
+}
 #endif
