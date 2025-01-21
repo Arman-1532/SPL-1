@@ -18,6 +18,25 @@ bool innerloop_again = true;
 char option;
 vector<string> column;
 
+double calculateSum(vector<string> x)
+{
+    vector<double> vec;
+    for (int i = 0; i < x.size(); i++)
+    {
+        if (x[i] == "NULL")
+        {
+            continue;
+        }
+        vec.push_back(stod(x[i]));
+    }
+
+    double sum = 0.0;
+    for (auto value : vec)
+    {
+        sum += value;
+    }
+    return sum;
+}
 bool loadCSV(string &filename)
 {
     ifstream file;
@@ -55,6 +74,29 @@ bool loadCSV(string &filename)
     }
     file.close();
     return true;
+}
+double calculateMean(vector<string> x)
+{
+    vector<double> vec;
+    for (int i = 0; i < x.size(); i++)
+    {
+        if (x[i] == "NULL")
+        {
+            continue;
+        }
+        vec.push_back(stod(x[i]));
+    }
+    double total = 0;
+    int sizeOfSample = vec.size();
+    double mean;
+    for (int i = 0; i < sizeOfSample; i++)
+    {
+        total += vec[i];
+    }
+
+    mean = total / sizeOfSample;
+
+    return mean;
 }
 void display()
 {
@@ -99,29 +141,6 @@ vector<string> getColumn(string columnName)
         cout << "invalid name of column" << endl;
     }
     return column;
-}
-double calculateMean(vector<string> x)
-{
-    vector<double> vec;
-    for (int i = 0; i < x.size(); i++)
-    {
-        if (x[i] == "NULL")
-        {
-            continue;
-        }
-        vec.push_back(stod(x[i]));
-    }
-    double total = 0;
-    int sizeOfSample = vec.size();
-    double mean;
-    for (int i = 0; i < sizeOfSample; i++)
-    {
-        total += vec[i];
-    }
-
-    mean = total / sizeOfSample;
-
-    return mean;
 }
 int partition(vector<double> &vec, int low, int high)
 {
@@ -329,25 +348,7 @@ void resizedTable(string shape){
         cout << endl;
     }
 }
-double calculateSum(vector<string> x)
-{
-    vector<double> vec;
-    for (int i = 0; i < x.size(); i++)
-    {
-        if (x[i] == "NULL")
-        {
-            continue;
-        }
-        vec.push_back(stod(x[i]));
-    }
 
-    double sum = 0.0;
-    for (auto value : vec)
-    {
-        sum += value;
-    }
-    return sum;
-}
 vector<string> splitString(string str)
 {
     vector<string> tokens;
