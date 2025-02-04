@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
+#include <cfloat>
 
 using namespace std;
 
@@ -258,6 +259,38 @@ vector<double> calculateMode(vector<string> x)
 
     return mode;
 }
+double calculateVariance(vector<string> x){
+    vector<double> vec;
+    for (int i = 0; i < x.size(); i++)
+    {
+        if (x[i] == "NULL")
+        {
+            continue;
+        }
+        vec.push_back(stod(x[i]));
+    }
+    int sizeOfSample = vec.size();
+    double variance;
+    double total = 0;
+
+    for(int i = 0; i<sizeOfSample; i++)
+    {
+        total += vec[i] * vec[i];
+    }
+    double mean = calculateMean(x);
+
+    double numerator = total - (sizeOfSample * mean * mean);
+    double denominator = sizeOfSample - 1;
+    variance = numerator / denominator;
+
+    return variance;
+}
+double calculateStandardDeviation(vector<string> &x){
+    double variance = calculateVariance(x);
+    double standardDeviation = sqrt(variance);
+
+    return standardDeviation;
+}
 vector<string> fillString(vector<string> &vec) {
     vector<string> filledVec = vec; 
   
@@ -332,7 +365,148 @@ vector<string> filterColumn(string &columnName, string &condition, string val)
 
     return filteredColumn;
 }
+double getMax(vector<string> x){
+    vector<double> vec;
+    for (int i = 0; i < x.size(); i++)
+    {
+        if (x[i] == "NULL")
+        {
+            continue;
+        }
+        vec.push_back(stod(x[i]));
+    }
 
+    double max = DBL_MIN;
+    for(double value : vec){
+        if(value > max){
+            max = value;
+        }
+    }
+    
+    return max;
+}
+double getMin(vector<string> x){
+    vector<double> vec;
+    for (int i = 0; i < x.size(); i++)
+    {
+        if (x[i] == "NULL")
+        {
+            continue;
+        }
+        vec.push_back(stod(x[i]));
+    }
+
+    double min = DBL_MAX;
+    for(double value : vec){
+        if(value < min){
+            min = value;
+        }
+    }
+
+    return min;
+}
+// ratio of std deviation and mean
+double calculateCoefficientOfVariation(vector<string> x){
+
+    double standardDeviation = calculateStandardDeviation(x);
+    double mean = calculateMean(x);
+    double coefficientOfVariation = ( standardDeviation / mean ) * 100.0;
+    return coefficientOfVariation;
+}
+bool isInteger(double position){
+    if(position - floor(position) == 0.0){
+        return true;
+    }
+
+    return false;
+}
+double calculatePercentile(vector<string> x, double percentile){
+    vector<double> vec;
+    for (int i = 0; i < x.size(); i++)
+    {
+        if (x[i] == "NULL")
+        {
+            continue;
+        }
+        vec.push_back(stod(x[i]));
+    }
+    int low = 0;
+    int high = vec.size() - 1;
+    quickSort(vec, low, high);
+
+    double percentileValue;
+    int sizeOfSample = vec.size();
+    if(percentile == 0){
+        percentileValue = -1;
+    }
+    else if(percentile == 100)
+    {
+        percentileValue = *(vec.end() - 1);
+    }
+    else{
+        double position = sizeOfSample * (percentile / 100.0);
+        if(isInteger(position)){
+            percentileValue = vec[position - 1];
+        }
+        else
+        {
+            percentileValue = (vec[position  - 1] + vec[position]) / 2;
+        }
+    }
+
+    return percentileValue;
+}
+vector<double> calculateDeciles(vector<string> x){
+    vector<double> deciles;
+    double percentile = 10;
+
+    while(percentile <= 90){
+        deciles.push_back(calculatePercentile(x, percentile));
+        percentile += 10.0;
+    }
+
+    return deciles;
+}
+vector<double> calculateQuartiles(vector<string> x){
+    vector<double> quartiles;
+    quartiles.resize(3);
+    double quartile = 25;
+
+    while(quartile <= 75){
+        quartiles.push_back(calculatePercentile(x, quartile));
+        quartile += 25.0;
+    }
+
+    return quartiles;
+}
+vector<double> detectOutliers(vector<string> x){  // inter quartile range
+    vector<double> outliersUsingIQR;
+    vector<double> quartiles = calculateQuartiles(x);
+    
+    double q1 = *(quartiles.begin());
+    double q3 = *(quartiles.end() - 1);
+
+    double IQR = q3 - q1;
+    double lowerBound = q1 - 1.5 * IQR;
+    double upperBound = q3 + 1.5 * IQR;
+    
+    vector<double> vec;
+    for (int i = 0; i < x.size(); i++)
+    {
+        if (x[i] == "NULL")
+        {
+            continue;
+        }
+        vec.push_back(stod(x[i]));
+    }
+    for (double value : vec) {
+        if (value < lowerBound || value > upperBound) {
+            outliersUsingIQR.push_back(value);
+        }
+    }
+    
+    return outliersUsingIQR;
+}
 void resizedTable(string shape){
     int row = shape[0] - '0';
     int column = shape[2] - '0';
@@ -607,12 +781,13 @@ start_here_outer:
                             tailValue = findTail(column);
                             cout << "tail value of " << splitedString[0] << " is : " << tailValue << endl;
                         }
-                        else if(specifyFunction[0] == "shape"){
+                        else if(method == "shape()"){
                             string shape = calculateShape(csvData);
                             cout << "shape of data : " << shape << endl;
                         }
                     }
                 }
+                break;
             case 'd':
                 while (innerloop_again)
                 {
@@ -644,6 +819,7 @@ start_here_outer:
 
                         resizedTable(str);
                     }
+                    // cgpa > 2
                     stringstream ss(method);
                     vector<string> filter;
                     while(getline(ss, temp, ' ')){
