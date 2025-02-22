@@ -10,8 +10,6 @@
 
 using namespace std;
 
-using namespace std;
-
 vector<vector<string>> csvData;
 vector<string> headers;
 bool outerloop_again = true;
@@ -38,7 +36,7 @@ double calculateSum(vector<string> x)
     }
     return sum;
 }
-bool loadCSV(string &filename)
+bool loadCSV(string &filename) 
 {
     ifstream file;
     file.open(filename);
@@ -116,7 +114,7 @@ void display()
         cout << "\n";
     }
 }
-vector<string> getColumn(string columnName)
+vector<string> getColumn(string columnName) 
 {
     int colIndex;
     int flag = 0;
@@ -313,21 +311,21 @@ vector<string> dropDuplicates(vector<string> col){
 
     return col;
 }
-string findHead(vector<string> vec){
+string findHead(vector<string> vec){ 
     string head;
     auto it = vec.begin();
     
     head = *it;
     return head;
 }
-string findTail(vector<string> vec){
+string findTail(vector<string> vec){ 
     string tail;
     auto it = vec.end() - 1;
     
     tail = *it;
     return tail;
 }
-string calculateShape(vector< vector< string> > csvData){
+string calculateShape(vector< vector< string> > csvData){ 
     string shape;
     int row = csvData.size();
     int column = csvData[0].size();
@@ -337,7 +335,7 @@ string calculateShape(vector< vector< string> > csvData){
 
     return shape; 
 }
-vector<string> filterColumn(string &columnName, string &condition, string val)
+vector<string> filterColumn(string &columnName, string &condition, string val) //
 {
     double value = stod(val);
     auto column = getColumn(columnName);
@@ -365,7 +363,7 @@ vector<string> filterColumn(string &columnName, string &condition, string val)
 
     return filteredColumn;
 }
-double getMax(vector<string> x){
+double getMax(vector<string> x){ 
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
@@ -385,7 +383,7 @@ double getMax(vector<string> x){
     
     return max;
 }
-double getMin(vector<string> x){
+double getMin(vector<string> x){ 
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
@@ -426,6 +424,7 @@ double calculatePercentile(vector<string> x, double percentile){
     {
         if (x[i] == "NULL")
         {
+            vec.push_back(0);
             continue;
         }
         vec.push_back(stod(x[i]));
@@ -435,7 +434,7 @@ double calculatePercentile(vector<string> x, double percentile){
     quickSort(vec, low, high);
 
     double percentileValue;
-    int sizeOfSample = vec.size();
+    int sizeOfSample = x.size();
     if(percentile == 0){
         percentileValue = -1;
     }
@@ -448,9 +447,14 @@ double calculatePercentile(vector<string> x, double percentile){
         if(isInteger(position)){
             percentileValue = vec[position - 1];
         }
+        else if(position < 1){
+            percentileValue = vec[0] / 2;
+        }
         else
         {
-            percentileValue = (vec[position  - 1] + vec[position]) / 2;
+            int floorValue = floor(position);
+            int ceiling = ceil(position);
+            percentileValue = (vec[floorValue - 1] + vec[ceiling - 1]) / 2;
         }
     }
 
@@ -462,14 +466,13 @@ vector<double> calculateDeciles(vector<string> x){
 
     while(percentile <= 90){
         deciles.push_back(calculatePercentile(x, percentile));
-        percentile += 10.0;
+        percentile += 10;
     }
 
     return deciles;
 }
 vector<double> calculateQuartiles(vector<string> x){
     vector<double> quartiles;
-    quartiles.resize(3);
     double quartile = 25;
 
     while(quartile <= 75){
@@ -495,6 +498,7 @@ vector<double> detectOutliers(vector<string> x){  // inter quartile range
     {
         if (x[i] == "NULL")
         {
+            vec.push_back(0);
             continue;
         }
         vec.push_back(stod(x[i]));
@@ -507,7 +511,7 @@ vector<double> detectOutliers(vector<string> x){  // inter quartile range
     
     return outliersUsingIQR;
 }
-void resizedTable(string shape){
+void resizedTable(string shape){ //
     int row = shape[0] - '0';
     int column = shape[2] - '0';
     for(int i = 0; i< column; i++){
@@ -523,7 +527,7 @@ void resizedTable(string shape){
     }
 }
 
-vector<string> splitString(string str)
+vector<string> splitString(string str) 
 {
     vector<string> tokens;
     string str1, str2;
@@ -575,7 +579,7 @@ void features()
     cout << "e. Quit(Press 'q' to quit)\n"
          << "\033[1;0m";
 }
-vector<string> specifyOperation(string &operation)
+vector<string> specifyOperation(string &operation) //
 {
     string metric;
     string num;
@@ -699,6 +703,60 @@ start_here_outer:
                             sum = calculateSum(column);
                             cout << "sum is : " << sum << endl << endl;
                         }
+                        else if(specifyFunction[0] == "variance"){
+                            double variance;
+                            variance = calculateVariance(column);
+                            cout << "variance is : " << variance << endl << endl;
+                        }
+                        else if(specifyFunction[0] == "standardDeviation"){
+                            double standardDeviation;
+                            standardDeviation = calculateStandardDeviation(column);
+                            cout << "Standard Deviation is : " << standardDeviation << endl << endl;
+                        }
+                        else if(specifyFunction[0] == "coefficientOfVariation"){
+                            double cov;
+                            cov = calculateCoefficientOfVariation(column);
+                            cout << "coefficient of variation is : " << cov << endl << endl;
+                        }
+                        else if(specifyFunction[0] == "percentile"){
+                            double percentile;
+                            percentile =calculatePercentile(column, stod(specifyFunction[1]));
+                            if(percentile == -1){
+                                cout << "0 percentile is invalid" << endl << endl;
+                            }
+                            else{
+                                cout << specifyFunction[1] << " percentile is : " << percentile << endl << endl;
+                            }
+                        }
+                        else if(specifyFunction[0] == "deciles"){
+                            vector <double> deciles;
+                            deciles = calculateDeciles(column);
+                            for(int i = 10, j = 0; i<= 90; i = i+10, j++){
+                                cout << i << " percentile : " << deciles[j] << endl;
+                            }
+                            cout << endl;
+                        }
+                        else if(specifyFunction[0] == "quartiles"){
+                            vector <double> quartiles;
+                            quartiles = calculateQuartiles(column);
+                            for(int i = 25, j = 0; i<=75; j++, i = i+25){
+                                cout << i << " percentile : " << quartiles[j] << endl;
+                            }
+                        }
+                        else if(specifyFunction[0] == "outliers"){
+                            vector<double> outliers;
+                            outliers = detectOutliers(column);
+                            if(outliers.size() == 0){
+                                cout << "No outliers" << endl << endl;
+                            }
+                            else{
+                                cout << "outliers : ";
+                                for(int i = 0; i<outliers.size(); i++){
+                                    cout << outliers[i] << " ";
+                                }
+                                cout << endl << endl;
+                            }
+                        }
                     }
                 }
                 break;
@@ -784,6 +842,16 @@ start_here_outer:
                         else if(method == "shape()"){
                             string shape = calculateShape(csvData);
                             cout << "shape of data : " << shape << endl;
+                        }
+                        else if(specifyFunction[0] == "min"){
+                            double min;
+                            min = getMin(column);
+                            cout << "min is : " << min << endl << endl;
+                        }
+                        else if(specifyFunction[0] == "max"){
+                            double max;
+                            max = getMax(column);
+                            cout << "max is : " << max << endl << endl;
                         }
                     }
                 }
