@@ -1181,6 +1181,8 @@ void begin()
         switch (option)
         {
             case 'a':
+                csvData.clear();
+                headers.clear();
                 cout << "enter the file path" << endl;
                 cin >> filepath;
                 if (!loadCSV(filepath))
@@ -1311,6 +1313,8 @@ void begin()
                 break;
 
             case 'b':
+                csvData.clear();
+                headers.clear();
                 cout << "enter the file path" << endl;
                 cin >> filepath;
                 if (!loadCSV(filepath))
@@ -1361,6 +1365,8 @@ void begin()
                 }
                 break;
             case 'c':
+                csvData.clear();
+                headers.clear();
                 cout << "enter the file path" << endl;
                 cin >> filepath;
                 if (!loadCSV(filepath))
@@ -1418,6 +1424,8 @@ void begin()
                 }
                 break;
             case 'd':
+                csvData.clear();
+                headers.clear();
                 cout << "enter the file path" << endl;
                 cin >> filepath;
                 if (!loadCSV(filepath))
