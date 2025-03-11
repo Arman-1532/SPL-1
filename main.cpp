@@ -123,6 +123,23 @@ void display()
         cout << "\n";
     }
 }
+void display_1(vector<vector<string>> csvData,vector<string> headers)
+{
+    for (int i = 0; i < headers.size(); i++)
+    {
+        cout << headers[i] << "\t";
+    }
+    cout << "\n";
+
+    for (auto row : csvData)
+    {
+        for (auto cell : row)
+        {
+            cout << cell << "\t";
+        }
+        cout << "\n";
+    }
+}
 vector<string> getColumn(string columnName) 
 {
     int colIndex;
