@@ -21,6 +21,7 @@ bool outerloop_again = true;
 bool innerloop_again = true;
 char option;
 vector<string> column;
+vector<string> column_2;
 string filepath;
 string null_hypo;
 string alter_hypo;
@@ -126,17 +127,31 @@ void display()
 }
 void display_1(vector<vector<string>> csvData,vector<string> headers)
 {
-    for (int i = 0; i < headers.size(); i++)
-    {
-        cout << headers[i] << "\t";
+    // Step 1: Calculate maximum width for each column
+    vector<size_t> colWidths(headers.size(), 0);
+
+    // Check headers
+    for (size_t i = 0; i < headers.size(); i++) {
+        colWidths[i] = headers[i].length();
+    }
+
+    // Check data rows and update widths if needed
+    for (const auto& row : csvData) {
+        for (size_t i = 0; i < row.size() && i < colWidths.size(); i++) {
+            colWidths[i] = max(colWidths[i], row[i].length());
+        }
+    }
+
+    // Step 2: Print headers with proper alignment
+    for (size_t i = 0; i < headers.size(); i++) {
+        cout << left << setw(colWidths[i] + 2) << headers[i]; // +2 for padding
     }
     cout << "\n";
 
-    for (auto row : csvData)
-    {
-        for (auto cell : row)
-        {
-            cout << cell << "\t";
+    // Step 3: Print data rows with proper alignment
+    for (const auto& row : csvData) {
+        for (size_t i = 0; i < row.size() && i < colWidths.size(); i++) {
+            cout << left << setw(colWidths[i] + 2) << row[i];
         }
         cout << "\n";
     }
@@ -1116,7 +1131,7 @@ void readFileForRegression(string filename,string &dep_var, string &indep_var, v
         y.push_back(value);
     }
 }
-void simple_linear_regression(string dep_variable, string indep_variable, vector<double> &x, vector<double> &y){
+void simple_linear_regression(string indep_variable, string dep_variable, vector<double> &x, vector<double> &y){
     double beta0_hat;
     double beta1_hat;
     vector<double> estimates;
@@ -1237,7 +1252,7 @@ void anova_test(vector<vector<double>> &groups){
     MSw = SSw / (mn - m);
 
     double f_statistic = MSb / MSw;
-    double tabulated_f = f_valueFromTable((mn - m) , (m-1));
+    double tabulated_f = f_valueFromTable((m-1) , (mn - m));
 
     cout << "\nANOVA Table\n";
     cout << setw(15) << left << "Source" 
@@ -1263,9 +1278,9 @@ void anova_test(vector<vector<double>> &groups){
 
     cout << "Critical value: " << tabulated_f << endl;
     if(f_statistic < tabulated_f){
-        cout << "We fail to reject the null hypothesis that all the groups have the mean!" << endl;
+        cout << "We fail to reject the null hypothesis that all the groups have the mean!" << endl << endl;
     }else{
-        cout << "We can reject the null hypothesis that all the groups have the mean!" << endl;
+        cout << "We can reject the null hypothesis that all the groups have the mean!" << endl << endl;
     }
 }
 void begin()
@@ -1656,6 +1671,8 @@ void begin()
                 break;
             case 'f':
                 while(innerloop_again){
+                    headers.clear();
+                    csvData.clear();
                     cout << "enter the path of dataset :" << endl;
                     cout << "(press 'q' to quit)" << endl;
                     string filename;
@@ -1664,11 +1681,23 @@ void begin()
                     if(filename == "q"){
                         goto start_here_inner;
                     }
+                    if (!loadCSV(filename))
+                    {
+                        return;
+                    }
+                    display_1(csvData,headers);
+
                     string dep_variable, indep_variable;
-                    x.clear();
-                    y.clear();
-                    readFileForRegression(filename,dep_variable,indep_variable,x,y);
-                    simple_linear_regression(dep_variable,indep_variable,x,y);
+                    printf("enter the dependent and independent variables : \n");
+                    cin >> dep_variable >> indep_variable;
+                    column = getColumn(dep_variable);
+                    column_2 = getColumn(indep_variable);
+
+                    for(int i = 0; i < column.size(); i++){
+                        x.push_back(stod(column_2[i]));
+                        y.push_back(stod(column[i]));
+                    }
+                    simple_linear_regression(indep_variable,dep_variable,x,y);
                 }
             case 'g': 
                 while(innerloop_again){
@@ -1683,8 +1712,8 @@ void begin()
                     groups.clear();
                     read_groups(groups,filename);
                     anova_test(groups);
-                    break;
                 }
+                break;
             case 'q':
                 outerloop_again = false;
                 break;
