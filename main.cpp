@@ -28,14 +28,68 @@ string alter_hypo;
 double null_hypothesis;
 double sigma;
 
-double calculateSum(vector<string> x)
+string handleNullValues(vector<string>& data) {
+    vector<double> validNumbers;
+    for (string& str : data) {
+        if (str != "NULL") {
+            double value = stod(str); // Convert string to double
+            validNumbers.push_back(value);
+        }
+    }
+
+    string imputedValueStr;
+    bool hasOutliers = false;
+
+    // Step 2: Check for outliers using IQR
+    if (validNumbers.size() > 1) { 
+        sort(validNumbers.begin(), validNumbers.end());
+        int n = validNumbers.size();
+
+        double Q1 = validNumbers[n / 4]; // Approx 25th percentile
+        double Q3 = validNumbers[(3 * n) / 4]; // Approx 75th percentile
+        double IQR = Q3 - Q1;
+        double lowerBound = Q1 - 1.5 * IQR;
+        double upperBound = Q3 + 1.5 * IQR;
+
+        // Check for outliers
+        for (double val : validNumbers) {
+            if (val < lowerBound || val > upperBound) {
+                hasOutliers = true;
+                break;
+            }
+        }
+    }
+
+    if (hasOutliers) { // Use median if outliers are detected
+        sort(validNumbers.begin(), validNumbers.end());
+        int n = validNumbers.size();
+        double median;
+        if (n % 2 == 0) {
+            median = (validNumbers[n/2 - 1] + validNumbers[n/2]) / 2.0;
+        } else {
+            median = validNumbers[n/2];
+        }
+        imputedValueStr = to_string(median);
+    } 
+    else { // Use mean if no outliers
+        double sum = 0.0;
+        for (double val : validNumbers) {
+            sum += val;
+        }
+        double mean = sum / validNumbers.size();
+        imputedValueStr = to_string(mean);
+    }
+
+    return imputedValueStr;
+}
+double calculateSum(vector<string> &x)
 {
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
         if (x[i] == "NULL")
         {
-            continue;
+            x[i] = handleNullValues(x);
         }
         vec.push_back(stod(x[i]));
     }
@@ -85,14 +139,14 @@ bool loadCSV(string &filename)
     file.close();
     return true;
 }
-double calculateMean(vector<string> x)
+double calculateMean(vector<string> &x)
 {
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
         if (x[i] == "NULL")
         {
-            continue;
+            x[i] = handleNullValues(x);
         }
         vec.push_back(stod(x[i]));
     }
@@ -216,14 +270,14 @@ void quickSort(vector<double> &vec, int low, int high)
         quickSort(vec, pi + 1, high);
     }
 }
-double calculateMedian(vector<string> x)
+double calculateMedian(vector<string> &x)
 {
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
         if (x[i] == "NULL")
         {
-            continue;
+            x[i] = handleNullValues(x);
         }
         vec.push_back(stod(x[i]));
     }
@@ -244,14 +298,14 @@ double calculateMedian(vector<string> x)
 
     return median;
 }
-vector<double> calculateMode(vector<string> x)
+vector<double> calculateMode(vector<string> &x)
 {
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
         if (x[i] == "NULL")
         {
-            continue;
+            x[i] = handleNullValues(x);
         }
         vec.push_back(stod(x[i]));
     }
@@ -299,13 +353,13 @@ vector<double> calculateMode(vector<string> x)
 
     return mode;
 }
-double calculateVariance(vector<string> x){
+double calculateVariance(vector<string> &x){
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
         if (x[i] == "NULL")
         {
-            continue;
+            x[i] = handleNullValues(x);
         }
         vec.push_back(stod(x[i]));
     }
@@ -336,7 +390,7 @@ vector<string> fillString(vector<string> &vec) {
   
     for (int i = 0; i<vec.size(); i++) {
         if (vec[i] == "NULL") {
-            filledVec[i] = "0";
+            filledVec[i] = handleNullValues(vec);
         }
     }
 
@@ -405,13 +459,13 @@ vector<string> filterColumn(string &columnName, string &condition, string val) /
 
     return filteredColumn;
 }
-double getMax(vector<string> x){ 
+double getMax(vector<string> &x){ 
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
         if (x[i] == "NULL")
         {
-            continue;
+            x[i] = handleNullValues(x);
         }
         vec.push_back(stod(x[i]));
     }
@@ -425,13 +479,13 @@ double getMax(vector<string> x){
     
     return max;
 }
-double getMin(vector<string> x){ 
+double getMin(vector<string> &x){ 
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
         if (x[i] == "NULL")
         {
-            continue;
+            x[i] = handleNullValues(x);
         }
         vec.push_back(stod(x[i]));
     }
@@ -460,14 +514,13 @@ bool isInteger(double position){
 
     return false;
 }
-double calculatePercentile(vector<string> x, double percentile){
+double calculatePercentile(vector<string> &x, double percentile){
     vector<double> vec;
     for (int i = 0; i < x.size(); i++)
     {
         if (x[i] == "NULL")
         {
-            vec.push_back(0);
-            continue;
+            x[i] = handleNullValues(x);
         }
         vec.push_back(stod(x[i]));
     }
