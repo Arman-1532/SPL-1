@@ -593,8 +593,7 @@ vector<double> detectOutliers(vector<string> x){  // inter quartile range
     {
         if (x[i] == "NULL")
         {
-            vec.push_back(0);
-            continue;
+            x[i] = handleNullValues(x);
         }
         vec.push_back(stod(x[i]));
     }
@@ -1351,6 +1350,9 @@ void begin()
         switch (option)
         {
             case 'a':
+                cout << endl << "\t\t   " << "Analyzing Data" << endl;
+                cout << "\t\t   " << string( 14 , '-')  << endl;
+
                 csvData.clear();
                 headers.clear();
                 cout << "enter the file path" << endl;
@@ -1483,6 +1485,9 @@ void begin()
                 break;
 
             case 'b':
+                cout << endl << "\t\t   " << "Cleaning Data" << endl;
+                cout << "\t\t   " << string( 13 , '-')  << endl;
+
                 csvData.clear();
                 headers.clear();
                 cout << "enter the file path" << endl;
@@ -1522,6 +1527,7 @@ void begin()
                             {
                                 cout << value << "\n";
                             }
+                            cout << endl;
                         }
                         else if(specifyFunction[0] == "fill"){
                             vector<string> filledString;
@@ -1535,6 +1541,9 @@ void begin()
                 }
                 break;
             case 'c':
+                cout << endl << "\t\t   " << "Exploring Data" << endl;
+                cout << "\t\t   " << string( 14 , '-')  << endl;
+
                 csvData.clear();
                 headers.clear();
                 cout << "enter the file path" << endl;
@@ -1563,6 +1572,10 @@ void begin()
                         cout << value << "\n";
                     }
                     cout << endl;
+                    if(method == "shape()"){
+                        string shape = calculateShape(csvData);
+                        cout << "shape of data : " << shape << endl;
+                    }
                     if(splitedString[1] != "empty"){
                         specifyFunction = specifyOperation(splitedString[1]);
                         if (specifyFunction[0] == "head")
@@ -1575,10 +1588,6 @@ void begin()
                             string tailValue;
                             tailValue = findTail(column);
                             cout << "tail value of " << splitedString[0] << " is : " << tailValue << endl;
-                        }
-                        else if(method == "shape()"){
-                            string shape = calculateShape(csvData);
-                            cout << "shape of data : " << shape << endl;
                         }
                         else if(specifyFunction[0] == "min"){
                             double min;
@@ -1594,6 +1603,9 @@ void begin()
                 }
                 break;
             case 'd':
+                cout << endl << "\t\t   " << "Manipulating Data" << endl;
+                cout << "\t\t   " << string( 17 , '-')  << endl;
+
                 csvData.clear();
                 headers.clear();
                 cout << "enter the file path" << endl;
@@ -1653,6 +1665,9 @@ void begin()
                 break;
             
             case 'e':
+                cout << endl << "\t\t   " << "Test of Hypothesis" << endl;
+                cout << "\t\t   " << string( 18 , '-')  << endl;
+
                 while(innerloop_again){
                     cout << "\n\033[1m" << "1.Z-Test\n2.T-Test\n3.Chi-Square Test\n4.F-Test\n" << "\033[1;0m" << endl;
                     cout << "enter your choice : " << endl;
@@ -1723,9 +1738,12 @@ void begin()
                 }
                 break;
             case 'f':
+                cout << endl << "\t\t   " << "Simple Linear Regression" << endl;
+                cout << "\t\t   " << string( 24 , '-')  << endl;
+
                 while(innerloop_again){
-                    headers.clear();
                     csvData.clear();
+                    headers.clear();
                     cout << "enter the path of dataset :" << endl;
                     cout << "(press 'q' to quit)" << endl;
                     string filename;
@@ -1753,6 +1771,9 @@ void begin()
                     simple_linear_regression(indep_variable,dep_variable,x,y);
                 }
             case 'g': 
+                cout << endl << "\t\t   " << "Anova" << endl;
+                cout << "\t\t   " << string( 5 , '-')  << endl;
+
                 while(innerloop_again){
                     cout << "enter the path of dataset :" << endl;
                     cout << "(press 'q' to quit)" << endl;
