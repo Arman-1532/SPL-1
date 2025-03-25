@@ -8,7 +8,6 @@ using namespace std;
 vector<string> getColumn(vector<vector<string>> csvData, vector<string> headers,string columnName)
 {
     int colIndex;
-    // auto it = find(headers.begin(), headers.end(), columnName);
     int flag = 0;
 
     for (colIndex = 0; colIndex < headers.size(); colIndex++)
@@ -55,7 +54,7 @@ vector<string> filterColumn(vector<vector<string>> csvData, vector<string> heade
         }
         catch (...)
         {
-            continue; // Skip non-numeric values
+            continue;
         }
     }
 

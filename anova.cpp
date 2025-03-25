@@ -85,14 +85,12 @@ void anova_test(vector<vector<double>> &groups){
          << setw(15) << "F Statistic" << endl;
     cout << string(65, '-') << endl;
 
-    // Between row
     cout << setw(15) << left << "Between" 
          << setw(10) << m - 1 
          << setw(15) << fixed << setprecision(2) << SSb 
          << setw(15) << MSb 
          << setw(15) << f_statistic << endl;
 
-    // Within row
     cout << setw(15) << left << "Within" 
          << setw(10) << mn - m 
          << setw(15) << fixed << setprecision(2) << SSw 

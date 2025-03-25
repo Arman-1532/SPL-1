@@ -25,7 +25,6 @@ double null_hypothesis;
 double sigma;
 string method;
 
-//prototypes
 void layout();
 void begin();
 void display();
@@ -666,7 +665,6 @@ void display(){
     }
     cout << "\n";
 
-    // Step 3: Print data rows with proper alignment
     for (auto& row : csvData) {
         for (int i = 0; i < row.size() && i < colWidths.size(); i++) {
             cout << left << setw(colWidths[i] + 2) << row[i];

@@ -68,7 +68,7 @@ string handleNullValues(vector<string>& data) {
         }
         imputedValueStr = to_string(median);
     } 
-    else { // Use mean if no outliers
+    else { 
         double sum = 0.0;
         for (double val : validNumbers) {
             sum += val;

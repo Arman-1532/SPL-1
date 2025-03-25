@@ -28,24 +28,21 @@ void readFileForRegression(string filename,string &dep_var, string &indep_var, v
     }
 }
 void drawScatterPlot(const vector<double>& x, const vector<double>& y) {
-    const int height = 20; // Height of the plot
-    const int width = 40;  // Width of the plot
-    char plot[height][width] = {0}; // Initialize plot grid
+    const int height = 20; 
+    const int width = 40; 
+    char plot[height][width] = {0}; 
 
-    // Fill the grid with spaces
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             plot[i][j] = ' ';
         }
     }
 
-    // Find min and max for scaling
     double xMin = *min_element(x.begin(), x.end());
     double xMax = *max_element(x.begin(), x.end());
     double yMin = *min_element(y.begin(), y.end());
     double yMax = *max_element(y.begin(), y.end());
 
-    // Plot the points
     for (size_t i = 0; i < x.size(); i++) {
         int xPos = static_cast<int>((x[i] - xMin) / (xMax - xMin) * (width - 1));
         int yPos = height - 1 - static_cast<int>((y[i] - yMin) / (yMax - yMin) * (height - 1));
@@ -54,17 +51,15 @@ void drawScatterPlot(const vector<double>& x, const vector<double>& y) {
         }
     }
 
-    // Draw x-axis (horizontal line)
-    int xAxisPos = height - 1 - static_cast<int>((0 - yMin) / (yMax - yMin) * (height - 1));
-    if (xAxisPos >= 0 && xAxisPos < height) {
-        for (int j = 0; j < width; j++) {
-            if (plot[xAxisPos][j] == ' ') {  // Only draw '-' if no point is there
-                plot[xAxisPos][j] = '-';
-            }
-        }
-    }
+    // int xAxisPos = height - 1 - static_cast<int>((0 - yMin) / (yMax - yMin) * (height - 1));
+    // if (xAxisPos >= 0 && xAxisPos < height) {
+    //     for (int j = 0; j < width; j++) {
+    //         if (plot[xAxisPos][j] == ' ') {  // Only draw '-' if no point is there
+    //             plot[xAxisPos][j] = '-';
+    //         }
+    //     }
+    // }
 
-    // Draw the plot
     cout << "\nScatter Plot (Independent vs Dependent Variable)\n";
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
